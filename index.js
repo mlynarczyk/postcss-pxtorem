@@ -46,7 +46,15 @@ module.exports = postcss.plugin('postcss-pxtorem', function (options) {
             var value = decl.value.replace(pxRegex, pxReplace);
 
             // if rem unit already exists, do not add or replace
-            if (declarationExists(decl.parent, decl.prop, value)) return;
+
+            // this check causes pxToRem to skip duplicated properties:
+            //   example:
+            //   input
+            //     a { padding: 16px !important; padding: 20px }
+            //   output
+            //     a { padding: 1rem !important; padding: 20px; }
+            
+            // if (declarationExists(decl.parent, decl.prop, value)) return;
 
             if (opts.replace) {
                 decl.value = value;
